@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Time Management Universe</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="loader"></div>
+        <p>Loading Time Management Universe...</p>
+    </div>
+    
+    <div id="info-panel" class="hidden">
+        <button id="close-info">×</button>
+        <h2 id="info-title"></h2>
+        <p id="info-content"></p>
+    </div>
+    
+    <div id="controls">
+        <h1>3D Time Management Universe</h1>
+        <div class="control-buttons">
+            <button id="toggle-animation">⏸ Pause</button>
+            <button id="reset-camera">🎥 Reset View</button>
+            <button id="toggle-tips">💡 Show Tips</button>
+        </div>
+        <div id="tips-overlay" class="hidden">
+            <h3>Interactive Elements:</h3>
+            <ul>
+                <li>🌟 <strong>Shooting Stars (Emails)</strong> - Click for email management tips</li>
+                <li>☄️ <strong>Asteroids (Meetings)</strong> - Click for meeting optimization</li>
+                <li>🏝️ <strong>Floating Islands (Breaks)</strong> - Click for break strategies</li>
+                <li>⏳ <strong>Hourglasses</strong> - Click for time tracking tips</li>
+                <li>⚙️ <strong>Gears</strong> - Click for productivity systems</li>
+                <li>📅 <strong>Calendars</strong> - Click for scheduling advice</li>
+            </ul>
+            <p><em>Use mouse to rotate view, scroll to zoom</em></p>
+        </div>
+    </div>
+    
+    <div id="canvas-container"></div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

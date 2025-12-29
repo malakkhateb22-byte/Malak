@@ -1,0 +1,233 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #0a0a1a 100%);
+    color: #fff;
+}
+
+#canvas-container {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #0a0a1a 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: opacity 0.5s ease-out;
+}
+
+#loading-screen.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loader {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(138, 43, 226, 0.3);
+    border-top: 4px solid #8a2be2;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#loading-screen p {
+    font-size: 18px;
+    color: #8a2be2;
+    text-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+}
+
+#controls {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 100;
+    background: rgba(10, 10, 26, 0.8);
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid rgba(138, 43, 226, 0.5);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 30px rgba(138, 43, 226, 0.3);
+}
+
+#controls h1 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    background: linear-gradient(90deg, #8a2be2, #4169e1, #ffd700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.control-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.control-buttons button {
+    padding: 10px 15px;
+    background: linear-gradient(135deg, #8a2be2, #4169e1);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+}
+
+.control-buttons button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(138, 43, 226, 0.6);
+}
+
+.control-buttons button:active {
+    transform: translateY(0);
+}
+
+#tips-overlay {
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(26, 10, 46, 0.9);
+    border-radius: 10px;
+    border: 1px solid rgba(138, 43, 226, 0.3);
+    max-width: 350px;
+}
+
+#tips-overlay h3 {
+    color: #ffd700;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+#tips-overlay ul {
+    list-style: none;
+    margin-bottom: 10px;
+}
+
+#tips-overlay li {
+    margin: 8px 0;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+#tips-overlay p {
+    font-size: 12px;
+    color: #8a2be2;
+    font-style: italic;
+    margin-top: 10px;
+}
+
+#info-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 200;
+    background: linear-gradient(135deg, rgba(26, 10, 46, 0.95), rgba(10, 10, 26, 0.95));
+    padding: 30px;
+    border-radius: 20px;
+    border: 3px solid rgba(138, 43, 226, 0.7);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 0 50px rgba(138, 43, 226, 0.5);
+    max-width: 500px;
+    min-width: 300px;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+#info-panel h2 {
+    color: #ffd700;
+    margin-bottom: 15px;
+    font-size: 24px;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+#info-panel p {
+    line-height: 1.6;
+    font-size: 16px;
+    color: #e0e0e0;
+}
+
+#close-info {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 30px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+#close-info:hover {
+    color: #8a2be2;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    #controls {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        padding: 15px;
+    }
+    
+    #controls h1 {
+        font-size: 18px;
+    }
+    
+    .control-buttons button {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+    
+    #tips-overlay {
+        max-width: 100%;
+    }
+    
+    #info-panel {
+        max-width: 90%;
+        padding: 20px;
+    }
+}
