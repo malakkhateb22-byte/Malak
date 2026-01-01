@@ -3,6 +3,8 @@ let scene, camera, renderer, currentScene = 0;
 let particles = [];
 let clock, spiralObjects = [], matrixCubes = [], pomodoroTimer, timeFlowParticles = [];
 let animationId;
+let confettiParticles = [];
+let achievementExplosions = [];
 
 // Scene configurations
 const scenes = [
@@ -131,15 +133,138 @@ function clearScene() {
     spiralObjects.forEach(o => scene.remove(o));
     matrixCubes.forEach(c => scene.remove(c));
     timeFlowParticles.forEach(p => scene.remove(p));
+    confettiParticles.forEach(p => scene.remove(p));
+    achievementExplosions.forEach(e => scene.remove(e));
     if (clock) scene.remove(clock);
     if (pomodoroTimer) scene.remove(pomodoroTimer);
-    
+
     particles = [];
     spiralObjects = [];
     matrixCubes = [];
     timeFlowParticles = [];
+    confettiParticles = [];
+    achievementExplosions = [];
     clock = null;
     pomodoroTimer = null;
+}
+
+// Create confetti explosion effect
+function createConfettiExplosion(position, count = 50) {
+    for (let i = 0; i < count; i++) {
+        const geometry = new THREE.BoxGeometry(0.2, 0.3, 0.05);
+        const hue = Math.random();
+        const color = new THREE.Color().setHSL(hue, 1, 0.6);
+        const material = new THREE.MeshPhongMaterial({
+            color: color,
+            emissive: color,
+            emissiveIntensity: 0.8,
+            shininess: 100
+        });
+        const confetti = new THREE.Mesh(geometry, material);
+
+        confetti.position.copy(position);
+
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 0.2 + Math.random() * 0.3;
+        confetti.userData = {
+            velocity: new THREE.Vector3(
+                Math.cos(angle) * speed,
+                Math.sin(angle) * speed,
+                (Math.random() - 0.5) * speed
+            ),
+            rotationVelocity: new THREE.Vector3(
+                (Math.random() - 0.5) * 0.2,
+                (Math.random() - 0.5) * 0.2,
+                (Math.random() - 0.5) * 0.2
+            ),
+            gravity: -0.01,
+            lifetime: 100 + Math.random() * 100
+        };
+
+        confettiParticles.push(confetti);
+        scene.add(confetti);
+    }
+}
+
+// Update confetti particles
+function updateConfetti() {
+    confettiParticles = confettiParticles.filter(confetti => {
+        confetti.userData.velocity.y += confetti.userData.gravity;
+        confetti.position.add(confetti.userData.velocity);
+        confetti.rotation.x += confetti.userData.rotationVelocity.x;
+        confetti.rotation.y += confetti.userData.rotationVelocity.y;
+        confetti.rotation.z += confetti.userData.rotationVelocity.z;
+
+        confetti.userData.lifetime--;
+
+        if (confetti.userData.lifetime <= 0) {
+            scene.remove(confetti);
+            return false;
+        }
+
+        // Fade out
+        confetti.material.opacity = confetti.userData.lifetime / 200;
+        confetti.material.transparent = true;
+
+        return true;
+    });
+}
+
+// Create achievement burst effect
+function createAchievementBurst(position) {
+    const burstGroup = new THREE.Group();
+
+    for (let i = 0; i < 20; i++) {
+        const geometry = new THREE.SphereGeometry(0.1, 8, 8);
+        const material = new THREE.MeshPhongMaterial({
+            color: 0xffdd00,
+            emissive: 0xffaa00,
+            emissiveIntensity: 1
+        });
+        const particle = new THREE.Mesh(geometry, material);
+
+        const angle = (i / 20) * Math.PI * 2;
+        const speed = 0.3;
+        particle.userData = {
+            velocity: new THREE.Vector3(
+                Math.cos(angle) * speed,
+                Math.sin(angle) * speed,
+                (Math.random() - 0.5) * speed
+            )
+        };
+
+        burstGroup.add(particle);
+    }
+
+    burstGroup.position.copy(position);
+    burstGroup.userData = { lifetime: 60 };
+    achievementExplosions.push(burstGroup);
+    scene.add(burstGroup);
+}
+
+// Update achievement explosions
+function updateAchievementBursts() {
+    achievementExplosions = achievementExplosions.filter(burst => {
+        burst.children.forEach(particle => {
+            particle.position.add(particle.userData.velocity);
+            particle.userData.velocity.multiplyScalar(0.95);
+        });
+
+        burst.userData.lifetime--;
+
+        if (burst.userData.lifetime <= 0) {
+            scene.remove(burst);
+            return false;
+        }
+
+        // Fade out
+        burst.children.forEach(particle => {
+            particle.material.opacity = burst.userData.lifetime / 60;
+            particle.material.transparent = true;
+        });
+
+        return true;
+    });
 }
 
 // Scene 1: Intro with floating clock particles
@@ -522,10 +647,34 @@ function animateTimeFlowScene() {
 // Main animation loop
 function animate() {
     animationId = requestAnimationFrame(animate);
-    
+
     // Run current scene animation
     scenes[currentScene].animate();
-    
+
+    // Update effects
+    updateConfetti();
+    updateAchievementBursts();
+
+    // Random confetti bursts in scenes
+    if (Math.random() < 0.01 && confettiParticles.length < 100) {
+        const pos = new THREE.Vector3(
+            (Math.random() - 0.5) * 20,
+            (Math.random() - 0.5) * 20,
+            (Math.random() - 0.5) * 20
+        );
+        createConfettiExplosion(pos, 20);
+    }
+
+    // Random achievement bursts
+    if (Math.random() < 0.005 && achievementExplosions.length < 5) {
+        const pos = new THREE.Vector3(
+            (Math.random() - 0.5) * 15,
+            (Math.random() - 0.5) * 15,
+            (Math.random() - 0.5) * 15
+        );
+        createAchievementBurst(pos);
+    }
+
     renderer.render(scene, camera);
 }
 
