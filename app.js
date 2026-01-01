@@ -3,6 +3,11 @@ let scene, camera, renderer, currentScene = 0;
 let particles = [];
 let clock, spiralObjects = [], matrixCubes = [], pomodoroTimer, timeFlowParticles = [];
 let animationId;
+let confettiParticles = [];
+let explosionParticles = [];
+let raycaster, mouse;
+let interactiveObjects = [];
+let tooltip;
 
 // Scene configurations
 const scenes = [
@@ -56,7 +61,7 @@ function init() {
     renderer.setClearColor(0x000000, 0);
     container.appendChild(renderer.domElement);
     
-    // Lights
+    // Enhanced Lights
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
     
@@ -68,8 +73,38 @@ function init() {
     pointLight2.position.set(-10, -10, 10);
     scene.add(pointLight2);
     
+    const pointLight3 = new THREE.PointLight(0x00ffff, 0.7, 100);
+    pointLight3.position.set(0, 15, -10);
+    scene.add(pointLight3);
+    
+    const pointLight4 = new THREE.PointLight(0xffff00, 0.6, 100);
+    pointLight4.position.set(-15, 0, 5);
+    scene.add(pointLight4);
+    
+    // Raycaster for interactivity
+    raycaster = new THREE.Raycaster();
+    mouse = new THREE.Vector2();
+    
+    // Create tooltip element
+    tooltip = document.createElement('div');
+    tooltip.style.position = 'absolute';
+    tooltip.style.background = 'rgba(0, 0, 0, 0.8)';
+    tooltip.style.color = 'white';
+    tooltip.style.padding = '10px 15px';
+    tooltip.style.borderRadius = '8px';
+    tooltip.style.fontSize = '14px';
+    tooltip.style.pointerEvents = 'none';
+    tooltip.style.display = 'none';
+    tooltip.style.zIndex = '1000';
+    tooltip.style.backdropFilter = 'blur(10px)';
+    tooltip.style.border = '1px solid rgba(255, 255, 255, 0.3)';
+    document.body.appendChild(tooltip);
+    
     // Event listeners
     window.addEventListener('resize', onWindowResize);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('click', onMouseClick);
+    
     document.querySelectorAll('.control-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const sceneIndex = parseInt(e.target.dataset.scene);
@@ -89,6 +124,142 @@ function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+// Mouse move handler for interactivity
+function onMouseMove(event) {
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    
+    // Update raycaster
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(interactiveObjects);
+    
+    if (intersects.length > 0) {
+        const obj = intersects[0].object;
+        if (obj.userData.tooltip) {
+            tooltip.style.display = 'block';
+            tooltip.style.left = event.clientX + 15 + 'px';
+            tooltip.style.top = event.clientY + 15 + 'px';
+            tooltip.innerHTML = obj.userData.tooltip;
+            obj.material.emissiveIntensity = 0.8;
+        }
+    } else {
+        tooltip.style.display = 'none';
+        interactiveObjects.forEach(obj => {
+            if (obj.material.emissiveIntensity) {
+                obj.material.emissiveIntensity = 0.3;
+            }
+        });
+    }
+}
+
+// Mouse click handler for explosions
+function onMouseClick(event) {
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(interactiveObjects);
+    
+    if (intersects.length > 0) {
+        const point = intersects[0].point;
+        createExplosion(point);
+        createConfetti(point);
+    }
+}
+
+// Create particle explosion effect
+function createExplosion(position) {
+    for (let i = 0; i < 50; i++) {
+        const geometry = new THREE.SphereGeometry(0.1, 8, 8);
+        const color = new THREE.Color().setHSL(Math.random(), 1, 0.5);
+        const material = new THREE.MeshBasicMaterial({ color: color });
+        const particle = new THREE.Mesh(geometry, material);
+        
+        particle.position.copy(position);
+        
+        const velocity = new THREE.Vector3(
+            (Math.random() - 0.5) * 0.5,
+            (Math.random() - 0.5) * 0.5,
+            (Math.random() - 0.5) * 0.5
+        );
+        
+        particle.userData = {
+            velocity: velocity,
+            life: 1.0,
+            decay: 0.02
+        };
+        
+        explosionParticles.push(particle);
+        scene.add(particle);
+    }
+}
+
+// Create confetti effect
+function createConfetti(position) {
+    for (let i = 0; i < 30; i++) {
+        const geometry = new THREE.BoxGeometry(0.2, 0.3, 0.05);
+        const colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
+        const material = new THREE.MeshPhongMaterial({ 
+            color: colors[Math.floor(Math.random() * colors.length)],
+            shininess: 100
+        });
+        const confetti = new THREE.Mesh(geometry, material);
+        
+        confetti.position.copy(position);
+        confetti.position.y += 2;
+        
+        confetti.userData = {
+            velocity: new THREE.Vector3(
+                (Math.random() - 0.5) * 0.3,
+                Math.random() * 0.5 + 0.2,
+                (Math.random() - 0.5) * 0.3
+            ),
+            rotationSpeed: new THREE.Vector3(
+                Math.random() * 0.2,
+                Math.random() * 0.2,
+                Math.random() * 0.2
+            ),
+            life: 1.0,
+            decay: 0.01
+        };
+        
+        confettiParticles.push(confetti);
+        scene.add(confetti);
+    }
+}
+
+// Update explosion particles
+function updateExplosions() {
+    for (let i = explosionParticles.length - 1; i >= 0; i--) {
+        const particle = explosionParticles[i];
+        particle.position.add(particle.userData.velocity);
+        particle.userData.velocity.y -= 0.01; // Gravity
+        particle.userData.life -= particle.userData.decay;
+        particle.material.opacity = particle.userData.life;
+        particle.material.transparent = true;
+        
+        if (particle.userData.life <= 0) {
+            scene.remove(particle);
+            explosionParticles.splice(i, 1);
+        }
+    }
+}
+
+// Update confetti particles
+function updateConfetti() {
+    for (let i = confettiParticles.length - 1; i >= 0; i--) {
+        const confetti = confettiParticles[i];
+        confetti.position.add(confetti.userData.velocity);
+        confetti.userData.velocity.y -= 0.015; // Gravity
+        confetti.rotation.x += confetti.userData.rotationSpeed.x;
+        confetti.rotation.y += confetti.userData.rotationSpeed.y;
+        confetti.rotation.z += confetti.userData.rotationSpeed.z;
+        confetti.userData.life -= confetti.userData.decay;
+        
+        if (confetti.userData.life <= 0 || confetti.position.y < -20) {
+            scene.remove(confetti);
+            confettiParticles.splice(i, 1);
+        }
+    }
 }
 
 // Switch between scenes
@@ -138,6 +309,7 @@ function clearScene() {
     spiralObjects = [];
     matrixCubes = [];
     timeFlowParticles = [];
+    interactiveObjects = [];
     clock = null;
     pomodoroTimer = null;
 }
@@ -202,7 +374,9 @@ function setupIntroScene() {
     clockGroup.add(center);
     
     clock = clockGroup;
+    clock.userData.tooltip = "⏰ Click to see time management magic!";
     scene.add(clock);
+    interactiveObjects.push(clock);
     
     // Floating particles around clock
     for (let i = 0; i < 200; i++) {
@@ -277,10 +451,20 @@ function setupTimeSpiralScene() {
         cube.position.y = Math.sin(angle) * radius;
         cube.position.z = t * 20 - 10;
         
-        cube.userData = { angle: angle, radius: radius, t: t };
+        cube.userData = { 
+            angle: angle, 
+            radius: radius, 
+            t: t,
+            tooltip: "🌀 Time flows in cycles - Click for celebration!"
+        };
         
         spiralObjects.push(cube);
         scene.add(cube);
+        
+        // Make some cubes interactive
+        if (i % 50 === 0) {
+            interactiveObjects.push(cube);
+        }
     }
 }
 
@@ -299,10 +483,10 @@ function animateTimeSpiralScene() {
 // Scene 3: Priority Matrix (Eisenhower Matrix)
 function setupPriorityMatrixScene() {
     const quadrants = [
-        { color: 0xff4444, label: 'Urgent & Important', pos: [5, 5, 0] },
-        { color: 0x44ff44, label: 'Not Urgent & Important', pos: [-5, 5, 0] },
-        { color: 0xffaa44, label: 'Urgent & Not Important', pos: [5, -5, 0] },
-        { color: 0x4444ff, label: 'Not Urgent & Not Important', pos: [-5, -5, 0] }
+        { color: 0xff4444, label: 'Urgent & Important', pos: [5, 5, 0], tip: '🔴 Do First: Critical tasks that need immediate attention' },
+        { color: 0x44ff44, label: 'Not Urgent & Important', pos: [-5, 5, 0], tip: '🟢 Schedule: Important long-term goals' },
+        { color: 0xffaa44, label: 'Urgent & Not Important', pos: [5, -5, 0], tip: '🟠 Delegate: Tasks that can be done by others' },
+        { color: 0x4444ff, label: 'Not Urgent & Not Important', pos: [-5, -5, 0], tip: '🔵 Eliminate: Time wasters and distractions' }
     ];
     
     quadrants.forEach((quad, index) => {
@@ -316,6 +500,8 @@ function setupPriorityMatrixScene() {
         });
         const cube = new THREE.Mesh(geometry, material);
         cube.position.set(...quad.pos);
+        cube.userData.tooltip = quad.tip;
+        interactiveObjects.push(cube);
         
         // Add smaller cubes inside representing tasks
         for (let i = 0; i < 10; i++) {
@@ -426,7 +612,9 @@ function setupPomodoroScene() {
     }
     
     pomodoroTimer = timerGroup;
+    pomodoroTimer.userData.tooltip = "🍅 Pomodoro: 25 min focus + 5 min break = Productivity!";
     scene.add(pomodoroTimer);
+    interactiveObjects.push(pomodoroTimer);
     
     // Orbiting particles
     for (let i = 0; i < 50; i++) {
@@ -525,6 +713,16 @@ function animate() {
     
     // Run current scene animation
     scenes[currentScene].animate();
+    
+    // Update particle effects
+    updateExplosions();
+    updateConfetti();
+    
+    // Cinematic camera movement
+    const time = Date.now() * 0.0001;
+    camera.position.x += Math.sin(time * 0.5) * 0.01;
+    camera.position.y += Math.cos(time * 0.3) * 0.01;
+    camera.lookAt(scene.position);
     
     renderer.render(scene, camera);
 }

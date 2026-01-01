@@ -6,35 +6,43 @@ A stunning, interactive 3D presentation about time management concepts built wit
 
 ### 5 Interactive Scenes:
 
-1. **Master Your Time (Intro)**
+1. **Master Your Time (Intro)** ⏰
    - Animated 3D clock with rotating hands
    - 200+ floating particles orbiting the clock
    - Dynamic lighting effects
+   - Interactive tooltips on hover
+   - Click for particle explosions!
 
-2. **The Time Spiral**
+2. **The Time Spiral** 🌀
    - 500 cubes forming a colorful spiral
    - Represents cyclical nature of time
    - Smooth camera movements
+   - Interactive elements with tooltips
+   - Click cubes for confetti celebration!
 
-3. **Eisenhower Priority Matrix**
+3. **Eisenhower Priority Matrix** 📊
    - 4 quadrants visualization (Urgent/Important matrix)
    - Animated task cubes bouncing within quadrants
-   - Color-coded priorities:
-     - Red: Urgent & Important
-     - Green: Not Urgent & Important
-     - Orange: Urgent & Not Important
-     - Blue: Not Urgent & Not Important
+   - Color-coded priorities with tooltips:
+     - 🔴 Red: Urgent & Important (Do First)
+     - 🟢 Green: Not Urgent & Important (Schedule)
+     - 🟠 Orange: Urgent & Not Important (Delegate)
+     - 🔵 Blue: Not Urgent & Not Important (Eliminate)
+   - Click quadrants for magical effects!
 
-4. **Pomodoro Technique**
+4. **Pomodoro Technique** 🍅
    - 3D tomato timer with glowing effects
    - 25-minute segment visualization
    - Orbiting particles representing focus cycles
    - Pulsing animation
+   - Interactive tooltip explaining the technique
+   - Click for productivity celebration!
 
-5. **Time Flow Visualization**
+5. **Time Flow Visualization** 💫
    - 1000+ particles flowing through space
    - Color-shifting based on position
    - Represents the continuous flow of time
+   - Cinematic camera movements
 
 ## 🚀 How to Run
 
@@ -57,22 +65,33 @@ Then open: http://localhost:8000
 
 ## 🎮 Controls
 
+### Navigation
 Use the buttons at the bottom of the screen to navigate between scenes:
-- **Intro** - Welcome scene with 3D clock
-- **Time Spiral** - Cyclical time visualization
-- **Priority Matrix** - Eisenhower Matrix
-- **Pomodoro** - Pomodoro technique timer
-- **Time Flow** - Particle flow visualization
+- **⏰ Intro** - Welcome scene with 3D clock
+- **🌀 Time Spiral** - Cyclical time visualization
+- **📊 Priority Matrix** - Eisenhower Matrix
+- **🍅 Pomodoro** - Pomodoro technique timer
+- **💫 Time Flow** - Particle flow visualization
+
+### Interactions
+- **Hover**: Move your mouse over 3D objects to see tooltips with time management tips
+- **Click**: Click on interactive objects to trigger particle explosions and confetti effects
+- **Watch**: Enjoy the cinematic camera movements and dynamic lighting
 
 ## 🎨 Visual Effects
 
-- **Dynamic Lighting**: Multiple point lights with different colors
-- **Particle Systems**: Hundreds of animated particles
+- **Dynamic Lighting**: 4 multi-colored point lights creating stunning illumination
+- **Particle Systems**: Hundreds of animated particles with physics
+- **Particle Explosions**: Click objects to trigger explosive particle effects
+- **Confetti Celebrations**: Colorful confetti with gravity and rotation
 - **Smooth Transitions**: Scene switching with fade effects
 - **Responsive Design**: Adapts to any screen size
 - **Glass Morphism**: Modern UI with backdrop blur effects
-- **Color Gradients**: Beautiful HSL color transitions
+- **Color Gradients**: Beautiful HSL color transitions with animated backgrounds
 - **3D Rotations**: Smooth object rotations and movements
+- **Cinematic Camera**: Subtle camera movements for immersive experience
+- **Interactive Tooltips**: Hover over objects to learn time management tips
+- **Glowing Effects**: Pulsing and glowing animations on interactive elements
 
 ## 🛠️ Technologies
 

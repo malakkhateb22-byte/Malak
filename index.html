@@ -14,7 +14,13 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            animation: gradientShift 10s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
         #canvas-container {
@@ -43,9 +49,15 @@
         #info-panel h1 {
             font-size: 4rem;
             font-weight: 700;
-            text-shadow: 0 0 20px rgba(0,0,0,0.5);
+            text-shadow: 0 0 20px rgba(0,0,0,0.5), 0 0 40px rgba(255,255,255,0.3);
             margin-bottom: 1rem;
             letter-spacing: 2px;
+            animation: titleGlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 20px rgba(0,0,0,0.5), 0 0 40px rgba(255,255,255,0.3); }
+            50% { text-shadow: 0 0 30px rgba(0,0,0,0.7), 0 0 60px rgba(255,255,255,0.6); }
         }
 
         #info-panel p {
@@ -81,8 +93,8 @@
 
         .control-btn:hover {
             background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.4);
         }
 
         .control-btn.active {
@@ -116,6 +128,33 @@
             color: white;
             font-size: 2rem;
             z-index: 1000;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.5; transform: translate(-50%, -50%) scale(1.1); }
+        }
+        
+        #instructions {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 1rem;
+            text-align: center;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            animation: fadeInOut 3s ease-in-out infinite;
+        }
+        
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
         }
     </style>
 </head>
@@ -123,14 +162,15 @@
     <div id="canvas-container"></div>
     <div id="scene-title"></div>
     <div id="info-panel"></div>
+    <div id="instructions">✨ Hover over objects for tips • Click for magical effects! ✨</div>
     <div id="controls">
-        <button class="control-btn" data-scene="0">Intro</button>
-        <button class="control-btn" data-scene="1">Time Spiral</button>
-        <button class="control-btn" data-scene="2">Priority Matrix</button>
-        <button class="control-btn" data-scene="3">Pomodoro</button>
-        <button class="control-btn" data-scene="4">Time Flow</button>
+        <button class="control-btn" data-scene="0">⏰ Intro</button>
+        <button class="control-btn" data-scene="1">🌀 Time Spiral</button>
+        <button class="control-btn" data-scene="2">📊 Priority Matrix</button>
+        <button class="control-btn" data-scene="3">🍅 Pomodoro</button>
+        <button class="control-btn" data-scene="4">💫 Time Flow</button>
     </div>
-    <div class="loading">Loading...</div>
+    <div class="loading">Loading 3D Experience...</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="app.js"></script>
